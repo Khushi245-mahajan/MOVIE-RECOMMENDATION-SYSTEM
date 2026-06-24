@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextWatch — My Watchlist</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="logo">NextWatch</a>
+    <nav class="nav">
+      <a href="/">🌍 Discover</a>
+      <a href="/bollywood">🎭 Bollywood</a>
+      <a href="/watchlist" class="active">🎬 Watchlist</a>
+    </nav>
+    <div class="search-wrap">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search your watchlist…" autocomplete="off">
+    </div>
+    <a href="/watchlist" class="watchlist-btn">🎬<span id="wlBadge" class="wl-badge"></span></a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap" style="padding-top:2rem">
+    <div style="margin-bottom:2rem">
+      <h1 class="heading" style="font-size:2rem;margin-bottom:4px">My Watchlist</h1>
+      <p style="color:var(--text3);font-size:0.9rem">Movies you want to watch — saved across sessions</p>
+    </div>
+
+    <div id="watchlistContent"></div>
+  </div>
+</main>
+
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal">
+    <div id="modalHero" class="modal-hero">🎬</div>
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  initModalClose();
+  await loadWatchlistCount();
+  renderWatchlistPage();
+});
+
+async function renderWatchlistPage() {
+  const container = document.getElementById('watchlistContent');
+  try {
+    const data = await fetch('/api/watchlist').then(r => r.json());
+    const movies = data.watchlist || [];
+
+    if (!movies.length) {
+      container.innerHTML = `
+        <div class="watchlist-empty">
+          <span class="icon">🍿</span>
+          <h3>Your watchlist is empty</h3>
+          <p>Browse movies and hit <strong>+ Add to Watchlist</strong> to save them here</p>
+          <a href="/" class="btn btn-primary" style="margin-top:1.5rem;display:inline-flex">Discover Movies</a>
+        </div>`;
+      return;
+    }
+
+    // Stats bar
+    const bollyCount = movies.filter(m => m.industry === 'bollywood').length;
+    const hollyCount = movies.filter(m => m.industry === 'hollywood').length;
+    const avgRating = (movies.reduce((s, m) => s + m.rating, 0) / movies.length).toFixed(1);
+
+    container.innerHTML = `
+      <div style="display:flex;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 24px;text-align:center">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--accent)">${movies.length}</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;letter-spacing:2px;text-transform:uppercase">Total</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 24px;text-align:center">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;background:linear-gradient(135deg,var(--bollywood),var(--bollywood2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${bollyCount}</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;letter-spacing:2px;text-transform:uppercase">Bollywood</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 24px;text-align:center">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--accent)">${hollyCount}</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;letter-spacing:2px;text-transform:uppercase">Hollywood</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 24px;text-align:center">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--accent2)">⭐ ${avgRating}</div>
+          <div style="font-size:0.72rem;color:var(--text3);font-weight:700;letter-spacing:2px;text-transform:uppercase">Avg Rating</div>
+        </div>
+      </div>
+      <div id="moviesGrid" class="movies-grid"></div>`;
+
+    state.watchlistIds = new Set(movies.map(m => m.id));
+    renderMovies(movies, movies.length);
+  } catch(e) {
+    container.innerHTML = '<p style="color:var(--text3)">Could not load watchlist.</p>';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextWatch — Find Your Next Watch</title>
+  <meta name="description" content="AI-powered movie recommendations for Bollywood and Hollywood. Filter by mood, genre, OTT platform and more.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+<!-- Ambient -->
+<div class="ambient ambient-1"></div>
+<div class="ambient ambient-2"></div>
+
+<!-- ── HEADER ──────────────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="logo">NextWatch</a>
+
+    <nav class="nav">
+      <a href="/" class="active">🌍 Discover</a>
+      <a href="/bollywood">🎭 Bollywood</a>
+      <a href="/watchlist">🎬 Watchlist</a>
+    </nav>
+
+    <div class="search-wrap">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search movies, cast, directors…" autocomplete="off">
+      <div id="autocompleteBox" class="autocomplete-box"></div>
+    </div>
+
+    <a href="/watchlist" class="watchlist-btn" title="My Watchlist">
+      🎬
+      <span id="wlBadge" class="wl-badge"></span>
+    </a>
+  </div>
+</header>
+
+<!-- ── MAIN ─────────────────────────────────────────────────────────── -->
+<main>
+  <div class="wrap">
+
+    <!-- Hero Featured -->
+    <div id="heroBanner" class="hero-banner">
+      <div class="hero-bg">🎬</div>
+      <div class="hero-gradient"></div>
+      <div class="hero-content">
+        <div class="hero-title" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;color:var(--text2)">Loading featured…</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" data-tab="all">🌍 All Movies</button>
+      <button class="tab-btn tab-bolly" data-tab="bollywood">🎭 Bollywood</button>
+      <button class="tab-btn" data-tab="hollywood">🎬 Hollywood</button>
+    </div>
+
+    <!-- Bollywood Hero (shown only on Bollywood tab) -->
+    <div id="bollyHero" class="bolly-hero" style="display:none">
+      <h2>Bollywood Spotlight</h2>
+      <p>The best of Hindi, Telugu, Tamil & Punjabi cinema — from golden classics to modern blockbusters</p>
+      <div class="bolly-stats">
+        <div class="bolly-stat"><div class="num">50+</div><div class="desc">Indian Films</div></div>
+        <div class="bolly-stat"><div class="num">5</div><div class="desc">OTT Platforms</div></div>
+        <div class="bolly-stat"><div class="num">4</div><div class="desc">Languages</div></div>
+      </div>
+    </div>
+
+    <!-- Mood Filter -->
+    <div class="mood-section section">
+      <div class="label">Filter by Mood</div>
+      <div id="moodGrid" class="mood-grid"></div>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="filter-row">
+      <select id="genreFilter" class="filter-select">
+        <option value="">All Genres</option>
+      </select>
+
+      <select id="yearFilter" class="filter-select">
+        <option value="">Any Year</option>
+        <option value="2020s">2020s</option>
+        <option value="2010s">2010s</option>
+        <option value="2000s">2000s</option>
+        <option value="90s">90s & Earlier</option>
+      </select>
+
+      <select id="ratingFilter" class="filter-select">
+        <option value="">Any Rating</option>
+        <option value="9">9+ ⭐</option>
+        <option value="8">8+ ⭐</option>
+        <option value="7">7+ ⭐</option>
+      </select>
+
+      <select id="langFilter" class="filter-select" style="display:none">
+        <option value="">All Languages</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Telugu">Telugu</option>
+        <option value="Tamil">Tamil</option>
+        <option value="Punjabi">Punjabi</option>
+      </select>
+
+      <select id="ottFilter" class="filter-select">
+        <option value="">Any Platform</option>
+        <option value="Netflix">Netflix</option>
+        <option value="Prime Video">Prime Video</option>
+        <option value="Disney+ Hotstar">Disney+ Hotstar</option>
+        <option value="ZEE5">ZEE5</option>
+        <option value="SonyLIV">SonyLIV</option>
+      </select>
+
+      <div class="sort-wrap">
+        <span class="label">Sort</span>
+        <select id="sortSelect" class="filter-select">
+          <option value="rating">Rating ↓</option>
+          <option value="year">Newest</option>
+          <option value="title">A–Z</option>
+        </select>
+      </div>
+
+      <span id="resultsCount" class="results-count"></span>
+    </div>
+
+    <!-- Movies Grid -->
+    <div id="moviesGrid" class="movies-grid"></div>
+
+  </div><!-- /wrap -->
+</main>
+
+<!-- ── MODAL ─────────────────────────────────────────────────────────── -->
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal" id="modal">
+    <div id="modalHero" class="modal-hero">🎬</div>
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

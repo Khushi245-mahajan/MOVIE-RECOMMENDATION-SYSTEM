@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextWatch — Bollywood</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <style>
+    .bolly-page-hero {
+      position: relative;
+      min-height: 260px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(233,30,140,0.18) 0%, rgba(255,107,53,0.12) 60%, rgba(8,8,16,0) 100%);
+      border: 1px solid rgba(233,30,140,0.2);
+      padding: 3rem;
+      margin: 2rem 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .bolly-page-hero::before {
+      content: '🎭';
+      position: absolute; right: -20px; top: -30px;
+      font-size: 14rem; opacity: 0.055; pointer-events: none;
+    }
+    .bolly-page-hero::after {
+      content: '🎬';
+      position: absolute; left: -10px; bottom: -20px;
+      font-size: 10rem; opacity: 0.04; pointer-events: none;
+    }
+    .bolly-page-hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem; letter-spacing: 4px;
+      background: linear-gradient(135deg, #e91e8c, #ff6b35);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; line-height: 1; margin-bottom: 0.75rem;
+    }
+    .bolly-page-hero p { color: var(--text2); font-size: 1rem; max-width: 550px; line-height: 1.6; margin-bottom: 1.5rem; }
+    .bolly-kv-grid { display: grid; grid-template-columns: repeat(4, auto); gap: 2rem; width: fit-content; }
+    .bolly-kv .num { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; background:linear-gradient(135deg,#e91e8c,#ff6b35); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .bolly-kv .lbl { font-size:0.72rem; color:var(--text3); font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+
+    .director-section { margin-bottom: 2.5rem; }
+    .director-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.75rem; }
+    .director-chip {
+      padding: 7px 18px; border-radius: 30px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.85rem; color: var(--text2); cursor: pointer;
+      transition: var(--transition);
+    }
+    .director-chip:hover, .director-chip.active {
+      background: linear-gradient(135deg, rgba(233,30,140,0.2), rgba(255,107,53,0.15));
+      border-color: var(--bollywood); color: var(--text);
+    }
+
+    .lang-tabs { display: flex; gap: 6px; margin-bottom: 2rem; }
+    .lang-tab {
+      padding: 6px 18px; border-radius: 30px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text2); cursor: pointer;
+      font-size: 0.85rem; font-weight: 500; transition: var(--transition);
+    }
+    .lang-tab.active {
+      background: linear-gradient(135deg, var(--bollywood), var(--bollywood2));
+      border-color: var(--bollywood); color: white;
+      box-shadow: 0 4px 15px rgba(233,30,140,0.3);
+    }
+    @media(max-width:600px) { .bolly-page-hero h1 { font-size:2.5rem; } .bolly-kv-grid { grid-template-columns: repeat(2,auto); } }
+  </style>
+</head>
+<body>
+
+<div class="ambient ambient-1" style="background:rgba(233,30,140,0.07)"></div>
+<div class="ambient ambient-2"></div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="logo">NextWatch</a>
+    <nav class="nav">
+      <a href="/">🌍 Discover</a>
+      <a href="/bollywood" class="active">🎭 Bollywood</a>
+      <a href="/watchlist">🎬 Watchlist</a>
+    </nav>
+    <div class="search-wrap">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="Search Bollywood movies…" autocomplete="off">
+      <div id="autocompleteBox" class="autocomplete-box"></div>
+    </div>
+    <a href="/watchlist" class="watchlist-btn">🎬<span id="wlBadge" class="wl-badge"></span></a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- Page Hero -->
+    <div class="bolly-page-hero">
+      <h1>Bollywood</h1>
+      <p>From golden-era classics to modern blockbusters — the definitive guide to Indian cinema across Hindi, Telugu, Tamil and Punjabi.</p>
+      <div class="bolly-kv-grid">
+        <div class="bolly-kv"><div class="num">50+</div><div class="lbl">Movies</div></div>
+        <div class="bolly-kv"><div class="num">4</div><div class="lbl">Languages</div></div>
+        <div class="bolly-kv"><div class="num">5</div><div class="lbl">OTT Platforms</div></div>
+        <div class="bolly-kv"><div class="num">60+</div><div class="lbl">Years of Cinema</div></div>
+      </div>
+    </div>
+
+    <!-- Language Tabs -->
+    <div class="section-head"><h2 class="heading" style="font-size:1rem">Browse by Language</h2></div>
+    <div class="lang-tabs" id="langTabs">
+      <button class="lang-tab active" data-lang="">All Languages</button>
+      <button class="lang-tab" data-lang="Hindi">🇮🇳 Hindi</button>
+      <button class="lang-tab" data-lang="Telugu">🎭 Telugu</button>
+      <button class="lang-tab" data-lang="Tamil">🌟 Tamil</button>
+      <button class="lang-tab" data-lang="Punjabi">🎵 Punjabi</button>
+    </div>
+
+    <!-- Featured Directors -->
+    <div class="director-section section">
+      <div class="label">Browse by Director</div>
+      <div class="director-chips" id="directorChips">
+        <button class="director-chip active" data-director="">All Directors</button>
+        <button class="director-chip" data-director="Rajkumar Hirani">Rajkumar Hirani</button>
+        <button class="director-chip" data-director="Anurag Kashyap">Anurag Kashyap</button>
+        <button class="director-chip" data-director="Zoya Akhtar">Zoya Akhtar</button>
+        <button class="director-chip" data-director="Imtiaz Ali">Imtiaz Ali</button>
+        <button class="director-chip" data-director="Ashutosh Gowariker">Ashutosh Gowariker</button>
+        <button class="director-chip" data-director="S.S. Rajamouli">S.S. Rajamouli</button>
+        <button class="director-chip" data-director="Sriram Raghavan">Sriram Raghavan</button>
+      </div>
+    </div>
+
+    <!-- Mood Filter -->
+    <div class="mood-section section">
+      <div class="label">Filter by Mood</div>
+      <div id="moodGrid" class="mood-grid"></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-row">
+      <select id="genreFilter" class="filter-select"><option value="">All Genres</option></select>
+      <select id="yearFilter" class="filter-select">
+        <option value="">Any Year</option>
+        <option value="2020s">2020s</option>
+        <option value="2010s">2010s</option>
+        <option value="2000s">2000s</option>
+        <option value="90s">Classics (pre-2000)</option>
+      </select>
+      <select id="ratingFilter" class="filter-select">
+        <option value="">Any Rating</option>
+        <option value="9">9+ ⭐</option>
+        <option value="8">8+ ⭐</option>
+        <option value="7">7+ ⭐</option>
+      </select>
+      <select id="langFilter" class="filter-select">
+        <option value="">All Languages</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Telugu">Telugu</option>
+        <option value="Tamil">Tamil</option>
+        <option value="Punjabi">Punjabi</option>
+      </select>
+      <select id="ottFilter" class="filter-select">
+        <option value="">Any Platform</option>
+        <option value="Netflix">Netflix</option>
+        <option value="Prime Video">Prime Video</option>
+        <option value="Disney+ Hotstar">Disney+ Hotstar</option>
+        <option value="ZEE5">ZEE5</option>
+        <option value="SonyLIV">SonyLIV</option>
+      </select>
+      <div class="sort-wrap">
+        <span class="label">Sort</span>
+        <select id="sortSelect" class="filter-select">
+          <option value="rating">Rating ↓</option>
+          <option value="year">Newest</option>
+          <option value="title">A–Z</option>
+        </select>
+      </div>
+      <span id="resultsCount" class="results-count"></span>
+    </div>
+
+    <!-- Grid -->
+    <div id="moviesGrid" class="movies-grid"></div>
+
+  </div>
+</main>
+
+<!-- Modal -->
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal">
+    <div id="modalHero" class="modal-hero">🎬</div>
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+  // Override: lock to bollywood tab
+  document.addEventListener('DOMContentLoaded', () => {
+    state.tab = 'bollywood';
+
+    // Language tabs
+    document.getElementById('langTabs')?.querySelectorAll('.lang-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const langSel = document.getElementById('langFilter');
+        if (langSel) { langSel.value = btn.dataset.lang; state.lang = btn.dataset.lang; fetchAndRender(); }
+      });
+    });
+
+    // Director chips
+    document.getElementById('directorChips')?.querySelectorAll('.director-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.director-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.search = chip.dataset.director;
+        const inp = document.getElementById('searchInput');
+        if (inp) inp.value = chip.dataset.director;
+        fetchAndRender();
+      });
+    });
+  });
+</script>
+</body>
+</html>
